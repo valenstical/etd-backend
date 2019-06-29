@@ -1,10 +1,3 @@
-import { listOfStateCodes, listOfStates } from './states';
-import { listOfLgas } from './lga';
-
-export const STATE_CODES = listOfStateCodes;
-export const STATES = listOfStates;
-export const LGAS = listOfLgas;
-
 export const STATUS = {
   OK: 200,
   CREATED: 201,
@@ -17,8 +10,6 @@ export const STATUS = {
 };
 
 export const PUBLICATION_TYPES = ['Dissertation', 'Thesis'];
-
-export const SCHOOL_TYPES = ['Creche/Nursery', 'Primary', 'Secondary'];
 
 export const MESSAGE = {
   SERVER_ERROR:
@@ -34,11 +25,6 @@ export const MESSAGE = {
 
   SUCCESS_MESSAGE: 'Operation was successful',
   FAILURE_MESSAGE: 'Operation failed',
-};
-
-export const PAYMENT_TYPE = {
-  MEMBERSHIP: 'plan_membership_fee',
-  STUDENT: 'plan_student_fee',
 };
 
 export default {};

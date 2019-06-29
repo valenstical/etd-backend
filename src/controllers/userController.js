@@ -2,17 +2,16 @@ import bcrypt from 'bcryptjs';
 import Random from 'random-int';
 import moment from 'moment';
 
-import { Response, generateToken } from '../helpers/utils';
-import { STATUS, STATE_CODES } from '../helpers/constants';
+import { Response, generateToken, valueFromToken } from '../helpers/utils';
+import { STATUS } from '../helpers/constants';
 import models from '../database/models';
-import Mailer from '../helpers/sendMail';
 
 const {
-  Member,
+  User,
   Sequelize: { Op },
 } = models;
 
-class MemberController {
+class UserController {
   /**
    * Login a user
    * @param {object} request The request object
@@ -24,7 +23,7 @@ class MemberController {
     const encryptedPassword = bcrypt.hashSync(password, process.env.SECRET_KEY);
 
     try {
-      let result = await Member.findOne({
+      let result = await User.findOne({
         where: {
           [Op.or]: {
             email: username,
@@ -68,14 +67,13 @@ class MemberController {
   static async registerMember(request, response) {
     const { body } = request;
     try {
-      body.id = `${STATE_CODES[body.state]}${Random(100000, 999999)}`;
-      const { dataValues } = await Member.create(body);
+      body.id = Random(10000, 30000);
+      const { dataValues } = await User.create(body);
       delete dataValues.password;
       dataValues.token = generateToken({ id: dataValues.id });
-      dataValues.isActive = false;
       return Response.send(response, STATUS.CREATED, dataValues, 'Registration sucessful!', true);
     } catch (error) {
-      return MemberController.displayInsertError('Registration failed.', error, response);
+      return UserController.displayInsertError('Registration failed.', error, response);
     }
   }
 
@@ -90,60 +88,11 @@ class MemberController {
       authValue: { id },
     } = response.locals;
     try {
-      await Member.update(request.body, { where: { id } });
+      await User.update(request.body, { where: { id } });
       return Response.send(response, STATUS.CREATED, null, 'Update sucessful!', true);
     } catch (error) {
-      return MemberController.displayInsertError('Update member details failed.', error, response);
+      return UserController.displayInsertError('Update member details failed.', error, response);
     }
-  }
-
-  /**
-   * Update profile image
-   * @param {object} request The request object
-   * @param {object} response The response object
-   * @param {function} next The next callback function
-   */
-  static async updateProfileImage(request, response) {
-    const {
-      authValue: { id },
-    } = response.locals;
-    const { url } = request.body;
-    try {
-      await Member.update({ image: url }, { where: { id } });
-      return Response.send(response, STATUS.CREATED, null, 'Update sucessful!', true);
-    } catch (error) {
-      return MemberController.displayInsertError('Update member details failed.', error, response);
-    }
-  }
-
-  /**
-   * Request new password
-   * @param {object} request The request object
-   * @param {object} response The response object
-   * @param {function} next The next callback function
-   */
-  static async forgotPassword(request, response) {
-    const { email } = request.body;
-    const member = await Member.getMember('email', email);
-
-    const token = generateToken({ email }, '1h');
-    Mailer.send({
-      to: email,
-      subject: 'Reset your Password',
-      template: member ? 'forgot-password' : 'no-account',
-      context: {
-        name: member ? member.name : '',
-        link: `${process.env.ROOT}/reset-password?token=${token}`,
-        root: process.env.ROOT,
-      },
-    });
-    return Response.send(
-      response,
-      STATUS.OK,
-      null,
-      `A link to reset your password has been set to ${email}. Please check your email.`,
-      true,
-    );
   }
 
   /**
@@ -153,12 +102,10 @@ class MemberController {
    * @param {function} next The next callback function
    */
   static async resetPassword(request, response) {
-    const {
-      authValue: { email },
-    } = response.locals;
+    const id = valueFromToken('id', response);
     const { password } = request.body;
     try {
-      if (!email) {
+      if (!id) {
         return Response.send(
           response,
           STATUS.UNATHORIZED,
@@ -167,11 +114,10 @@ class MemberController {
           true,
         );
       }
-
-      await Member.update({ password }, { where: { email } });
+      await User.update({ password }, { where: { id } });
       return Response.send(response, STATUS.CREATED, null, 'Password reset sucessful!', true);
     } catch (error) {
-      return MemberController.displayInsertError('Password reset failed!.', error, response);
+      return UserController.displayInsertError('Password reset failed!.', error, response);
     }
   }
 
@@ -200,4 +146,4 @@ class MemberController {
     );
   }
 }
-export default MemberController;
+export default UserController;
