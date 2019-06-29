@@ -21,7 +21,7 @@ app.use(multer({ dest: '' }).any());
 app.use('/', router);
 
 app.listen(PORT, () => {
-  pingmydyno('https://appson-backend.herokuapp.com');
+  pingmydyno('https://etd-ng.herokuapp.com/');
 });
 
 export default app;

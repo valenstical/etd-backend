@@ -1,26 +1,13 @@
 import bcrypt from 'bcryptjs';
 
 export default (sequelize, DataTypes) => {
-  const Member = sequelize.define('Member', {
+  const User = sequelize.define('User', {
     id: {
       allowNull: false,
       primaryKey: true,
-      type: DataTypes.STRING,
-    },
-    name: {
-      type: DataTypes.STRING,
-    },
-    state: {
       type: DataTypes.INTEGER,
     },
-    email: {
-      type: DataTypes.STRING,
-      unique: true,
-    },
-    sex: {
-      type: DataTypes.STRING,
-    },
-    phone: {
+    name: {
       type: DataTypes.STRING,
       unique: true,
     },
@@ -30,16 +17,9 @@ export default (sequelize, DataTypes) => {
         this.setDataValue('password', bcrypt.hashSync(value, process.env.SECRET_KEY));
       },
     },
-    image: {
-      type: DataTypes.STRING,
-    },
-    isConfirmed: {
+    isAdmin: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
-    },
-    expiresAt: {
-      type: DataTypes.DATE,
-      defaultValue: null,
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -53,15 +33,15 @@ export default (sequelize, DataTypes) => {
   });
 
   /**
-   * Get a member details if it exist
+   * Get a User if exist
    * @param {string} column Column to check against
    * @param {string} value Value to lookup
    * @returns {object} The user details if found, null
    */
-  Member.getMember = async (column, value) => {
+  User.getUser = async (column, value) => {
     let result = null;
     try {
-      const { dataValues } = await Member.findOne({
+      const { dataValues } = await User.findOne({
         where: {
           [column]: value,
         },
@@ -76,8 +56,8 @@ export default (sequelize, DataTypes) => {
     return result;
   };
 
-  Member.associate = (models) => {
+  User.associate = (models) => {
     // associations can be defined here
   };
-  return Member;
+  return User;
 };
