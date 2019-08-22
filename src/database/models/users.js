@@ -9,6 +9,9 @@ export default (sequelize, DataTypes) => {
     },
     name: {
       type: DataTypes.STRING,
+    },
+    email: {
+      type: DataTypes.STRING,
       unique: true,
     },
     password: {
@@ -20,6 +23,10 @@ export default (sequelize, DataTypes) => {
     isAdmin: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
+    },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
     },
     createdAt: {
       type: DataTypes.DATE,

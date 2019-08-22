@@ -1,15 +1,11 @@
 import bcrypt from 'bcryptjs';
 import Random from 'random-int';
-import moment from 'moment';
 
 import { Response, generateToken, valueFromToken } from '../helpers/utils';
 import { STATUS } from '../helpers/constants';
 import models from '../database/models';
 
-const {
-  User,
-  Sequelize: { Op },
-} = models;
+const { User } = models;
 
 class UserController {
   /**
@@ -19,17 +15,14 @@ class UserController {
    * @param {function} next The next callback function
    */
   static async login(request, response) {
-    const { username, password } = request.body;
+    const { email, password } = request.body;
     const encryptedPassword = bcrypt.hashSync(password, process.env.SECRET_KEY);
-
     try {
       let result = await User.findOne({
         where: {
-          [Op.or]: {
-            email: username,
-            phone: username,
-          },
+          email,
           password: encryptedPassword,
+          isActive: true,
         },
         attributes: {
           exclude: ['password'],
@@ -42,7 +35,6 @@ class UserController {
       if (status) {
         result = result.dataValues;
         result.token = generateToken({ id: result.id });
-        result.isActive = moment(result.expiresAt).isAfter(moment());
         code = STATUS.OK;
         message = 'Log in  successful!';
       }
@@ -51,7 +43,7 @@ class UserController {
       return Response.send(
         response,
         STATUS.SERVER_ERROR,
-        null,
+        error,
         'Log in failed, please try again.',
         false,
       );
@@ -64,16 +56,26 @@ class UserController {
    * @param {object} response The response object
    * @param {function} next The next callback function
    */
-  static async registerMember(request, response) {
+  static async registerUser(request, response) {
     const { body } = request;
     try {
-      body.id = Random(10000, 30000);
+      body.id = Random(10000, 99999);
       const { dataValues } = await User.create(body);
       delete dataValues.password;
       dataValues.token = generateToken({ id: dataValues.id });
-      return Response.send(response, STATUS.CREATED, dataValues, 'Registration sucessful!', true);
+      return Response.send(
+        response,
+        STATUS.CREATED,
+        dataValues,
+        'Registration sucessful!',
+        true,
+      );
     } catch (error) {
-      return UserController.displayInsertError('Registration failed.', error, response);
+      return UserController.displayInsertError(
+        'Registration failed.',
+        error,
+        response,
+      );
     }
   }
 
@@ -89,9 +91,19 @@ class UserController {
     } = response.locals;
     try {
       await User.update(request.body, { where: { id } });
-      return Response.send(response, STATUS.CREATED, null, 'Update sucessful!', true);
+      return Response.send(
+        response,
+        STATUS.CREATED,
+        null,
+        'Update sucessful!',
+        true,
+      );
     } catch (error) {
-      return UserController.displayInsertError('Update member details failed.', error, response);
+      return UserController.displayInsertError(
+        'Update member details failed.',
+        error,
+        response,
+      );
     }
   }
 
@@ -115,9 +127,19 @@ class UserController {
         );
       }
       await User.update({ password }, { where: { id } });
-      return Response.send(response, STATUS.CREATED, null, 'Password reset sucessful!', true);
+      return Response.send(
+        response,
+        STATUS.CREATED,
+        null,
+        'Password reset sucessful!',
+        true,
+      );
     } catch (error) {
-      return UserController.displayInsertError('Password reset failed!.', error, response);
+      return UserController.displayInsertError(
+        'Password reset failed!.',
+        error,
+        response,
+      );
     }
   }
 
@@ -132,7 +154,8 @@ class UserController {
   static displayInsertError(title, error, response) {
     const { errors } = error;
     const { path } = errors[0];
-    const message = path === 'email' ? 'Email already exists' : 'Phone number already exists';
+    const message =
+      path === 'email' ? 'Email already exists' : 'Phone number already exists';
     Response.send(
       response,
       STATUS.UNPROCESSED,

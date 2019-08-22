@@ -1,31 +1,11 @@
 import express from 'express';
-import { Validator, handleValidation } from '../middleware/validator';
+import { handleValidation } from '../middleware/validatorHelpers';
 import UserController from '../controllers/userController';
+import { validateLogin } from '../middleware/validateLogin';
 
 const router = express.Router();
 
 // Login user
-router.post('/login', Validator.validateLogin, handleValidation, UserController.login);
-
-// // Register a new user
-// router.post('/', Validator.validateRegistration, handleValidation, UserController.registerUser);
-
-// // Update user details
-// router.patch(
-//   '/',
-//   Validator.validateToken,
-//   Validator.validateUserDetails,
-//   handleValidation,
-//   UserController.updateUser,
-// );
-
-// // Reset password
-// router.patch(
-//   '/reset_password',
-//   Validator.validateToken,
-//   Validator.validateResetPassword,
-//   handleValidation,
-//   UserController.resetPassword,
-// );
+router.post('/login', validateLogin, handleValidation, UserController.login);
 
 export default router;
