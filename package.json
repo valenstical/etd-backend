@@ -19,7 +19,6 @@
   },
   "keywords": [
     "nodejs",
-    "etd",
     "express",
     "postgresql",
     "sequelize"

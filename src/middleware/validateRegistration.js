@@ -1,4 +1,9 @@
-import { validateRequired, validateEmail, validateEmpty } from './validatorHelpers';
+import {
+  validateRequired,
+  validateEmail,
+  validateEmpty,
+  validateOptionalBoolean,
+} from './validatorHelpers';
 
 export const validateRegisterUser = [
   validateRequired('name'),
@@ -12,6 +17,12 @@ export const validateUpdateUser = [
   validateRequired('email'),
   validateRequired('userId'),
   validateEmail(),
+];
+
+export const validateDeactiveUser = [
+  validateRequired('userId'),
+  validateRequired('status'),
+  validateOptionalBoolean('status'),
 ];
 
 export default {};
