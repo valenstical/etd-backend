@@ -154,8 +154,7 @@ class UserController {
   static displayInsertError(title, error, response) {
     const { errors } = error;
     const { path } = errors[0];
-    const message =
-      path === 'email' ? 'Email already exists' : 'Phone number already exists';
+    const message = path === 'email' ? 'Email already exists' : 'Phone number already exists';
     Response.send(
       response,
       STATUS.UNPROCESSED,
