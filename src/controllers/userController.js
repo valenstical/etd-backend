@@ -63,19 +63,9 @@ class UserController {
       const { dataValues } = await User.create(body);
       delete dataValues.password;
       dataValues.token = generateToken({ id: dataValues.id });
-      return Response.send(
-        response,
-        STATUS.CREATED,
-        dataValues,
-        'Registration sucessful!',
-        true,
-      );
+      return Response.send(response, STATUS.CREATED, dataValues, 'Registration sucessful!', true);
     } catch (error) {
-      return UserController.displayInsertError(
-        'Registration failed.',
-        error,
-        response,
-      );
+      return UserController.displayInsertError('Registration failed.', error, response);
     }
   }
 
@@ -85,25 +75,13 @@ class UserController {
    * @param {object} response The response object
    * @param {function} next The next callback function
    */
-  static async updateMember(request, response) {
-    const {
-      authValue: { id },
-    } = response.locals;
+  static async updateUser(request, response) {
+    const { userId } = request.body;
     try {
-      await User.update(request.body, { where: { id } });
-      return Response.send(
-        response,
-        STATUS.CREATED,
-        null,
-        'Update sucessful!',
-        true,
-      );
+      await User.update(request.body, { where: { id: userId } });
+      return Response.send(response, STATUS.OK, null, 'Update sucessful!', true);
     } catch (error) {
-      return UserController.displayInsertError(
-        'Update member details failed.',
-        error,
-        response,
-      );
+      return UserController.displayInsertError('Update user details failed.', error, response);
     }
   }
 
@@ -127,19 +105,9 @@ class UserController {
         );
       }
       await User.update({ password }, { where: { id } });
-      return Response.send(
-        response,
-        STATUS.CREATED,
-        null,
-        'Password reset sucessful!',
-        true,
-      );
+      return Response.send(response, STATUS.CREATED, null, 'Password reset sucessful!', true);
     } catch (error) {
-      return UserController.displayInsertError(
-        'Password reset failed!.',
-        error,
-        response,
-      );
+      return UserController.displayInsertError('Password reset failed!.', error, response);
     }
   }
 

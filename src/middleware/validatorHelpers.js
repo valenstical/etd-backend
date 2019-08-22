@@ -2,7 +2,7 @@ import { validationResult, body } from 'express-validator/check';
 import { Response } from '../helpers/utils';
 import { STATUS, MESSAGE } from '../helpers/constants';
 
-export const validateRequired = (field, message = `${field} field is required`) => body(field)
+export const validateRequired = (field, message = `${field} is required`) => body(field)
   .trim()
   .not()
   .isEmpty()
