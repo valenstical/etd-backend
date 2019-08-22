@@ -2,7 +2,11 @@ import express from 'express';
 import { handleValidation } from '../middleware/validatorHelpers';
 import UserController from '../controllers/userController';
 import { validateLogin } from '../middleware/validateLogin';
-import { validateRegisterUser, validateUpdateUser } from '../middleware/validateRegistration';
+import {
+  validateRegisterUser,
+  validateUpdateUser,
+  validateDeactiveUser,
+} from '../middleware/validateRegistration';
 import { validateToken } from '../middleware/authenticate';
 import { validateAdmin } from '../middleware/validateAdmin';
 
@@ -21,7 +25,7 @@ router.post(
   UserController.registerUser,
 );
 
-// Edit a new user
+// Edit an existing user
 router.patch(
   '/',
   validateToken,
@@ -29,6 +33,16 @@ router.patch(
   validateUpdateUser,
   handleValidation,
   UserController.updateUser,
+);
+
+// Deactivate an existing user
+router.delete(
+  '/',
+  validateToken,
+  validateAdmin,
+  validateDeactiveUser,
+  handleValidation,
+  UserController.deactivateUser,
 );
 
 export default router;

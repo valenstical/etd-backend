@@ -5,7 +5,10 @@ import { Response, generateToken, valueFromToken } from '../helpers/utils';
 import { STATUS } from '../helpers/constants';
 import models from '../database/models';
 
-const { User } = models;
+const {
+  User,
+  Sequelize: { Op },
+} = models;
 
 class UserController {
   /**
@@ -82,6 +85,25 @@ class UserController {
       return Response.send(response, STATUS.OK, null, 'Update sucessful!', true);
     } catch (error) {
       return UserController.displayInsertError('Update user details failed.', error, response);
+    }
+  }
+
+  /**
+   * Delete/Deactive a user
+   * @param {object} request The request object
+   * @param {object} response The response object
+   * @param {function} next The next callback function
+   */
+  static async deactivateUser(request, response) {
+    const { userId, status } = request.body;
+    try {
+      await User.update(
+        { isActive: status },
+        { where: { id: userId, [Op.not]: { isAdmin: true } } },
+      );
+      return Response.send(response, STATUS.OK, null, 'User status updated!', true);
+    } catch (error) {
+      return UserController.displayInsertError('Update user status failed.', error, response);
     }
   }
 
