@@ -1,9 +1,8 @@
-import { validationResult, body, query } from 'express-validator/check';
+import { validationResult, body } from 'express-validator/check';
 import { Response } from '../helpers/utils';
 import { STATUS, MESSAGE } from '../helpers/constants';
-import validateToken from './authenticate';
 
-export const validateRequired = (field, message = 'This field is required') => body(field)
+export const validateRequired = (field, message = `${field} field is required`) => body(field)
   .trim()
   .not()
   .isEmpty()
@@ -27,67 +26,37 @@ export const validateOptionalBoolean = (field, message = `Enter a valid ${field}
   .isBoolean()
   .withMessage(message);
 
-export const validateEmpty = (field, message = 'This field is required') => body(field)
+export const validateEmpty = (field, message = `${field} is required`) => body(field)
   .not()
   .isEmpty()
   .withMessage(message);
 
-export const validateEmail = () => body('email')
-  .trim()
-  .isEmail()
-  .withMessage('Enter a valid email');
-
-export const validatePhone = () => body('phone')
-  .trim()
-  .isMobilePhone(['en-NG'])
-  .withMessage('Enter a valid mobile phone number');
-
-export const validateState = (message = 'Choose a state') => body('state')
+export const validateNumber = (field, message = `${field} must be a number`, small = true) => body(field)
   .trim()
   .isInt()
   .withMessage(message)
-  .isInt({ min: 0, max: 36 })
+  .isInt({ min: small ? 10000 : 1000000, max: small ? 99999 : 9999999 })
   .withMessage(message);
-
-export const validateStateParam = (message = 'Choose a tate') => query('state')
-  .trim()
-  .isInt()
-  .withMessage(message)
-  .isInt({ min: 0, max: 36 })
-  .withMessage(message);
-
-export const validateNumber = (field, message = `${field} must be a number`) => body(field)
-  .trim()
-  .isInt()
-  .withMessage(message);
-
-export const validateSex = () => body('sex')
-  .trim()
-  .isIn(['Male', 'Female'])
-  .withMessage('Choose a sex');
 
 export const validateUrl = (field = 'url', message = 'Enter a valid url') => body(field)
   .trim()
   .isURL()
   .withMessage(message);
 
-const validateMemberDetails = [
-  validateRequired('name'),
-  validateState(),
-  validateEmail(),
-  validateSex(),
-  validatePhone(),
-];
+export const validateEmail = (field = 'email', message = 'Enter a valid email address') => body(field)
+  .trim()
+  .isEmail()
+  .withMessage(message);
 
-const validateComparison = (field1, field2, message = 'Passwords do not match.') => [
+export const validateComparison = (field1, field2, message = 'Passwords do not match.') => [
   body(field1)
     .not()
     .isEmpty()
-    .withMessage('This field is required'),
+    .withMessage(`${field1} is required`),
   body(field2)
     .not()
     .isEmpty()
-    .withMessage('This field is required')
+    .withMessage(`${field2} is required`)
     .custom((password, { req }) => {
       if (password !== req.body[field1]) {
         throw new Error(message);
@@ -96,17 +65,6 @@ const validateComparison = (field1, field2, message = 'Passwords do not match.')
       }
     }),
 ];
-
-export const Validator = {
-  validateLogin: [validateRequired('username'), validateEmpty('password')],
-  validateRegistration: [...validateMemberDetails, validateEmpty('password')],
-  validateMemberDetails,
-  validateToken,
-  validateImage: [validateUrl('url', 'Image url invalid')],
-  validateEmail: [validateEmail()],
-  validateResetPassword: [...validateComparison('password', 'confirm_password')],
-  validatePaymentRef: [validateEmpty('ref', 'The payment reference code is required.')],
-};
 
 export const validatePagination = (request, response, next) => {
   const page = request.query.page || 1;
