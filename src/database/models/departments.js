@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-  const Faculty = sequelize.define('Faculty', {
+  const Department = sequelize.define('Department', {
     id: {
       allowNull: false,
       primaryKey: true,
@@ -21,15 +21,15 @@ export default (sequelize, DataTypes) => {
   });
 
   /**
-   * Get a faculty if exist
+   * Get a department if exist
    * @param {string} column Column to check against
    * @param {string} value Value to lookup
    * @returns {object} The details if found, null
    */
-  Faculty.getFaculty = async (column, value) => {
+  Department.getDepartment = async (column, value) => {
     let result = null;
     try {
-      const { dataValues } = await Faculty.findOne({
+      const { dataValues } = await Department.findOne({
         where: {
           [column]: value,
         },
@@ -40,5 +40,13 @@ export default (sequelize, DataTypes) => {
     }
     return result;
   };
-  return Faculty;
+
+  Department.associate = (models) => {
+    Department.belongsTo(models.Faculty, {
+      foreignKey: 'facultyId',
+      targetKey: 'id',
+      onDelete: 'RESTRICT',
+    });
+  };
+  return Department;
 };

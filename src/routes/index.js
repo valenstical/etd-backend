@@ -3,6 +3,7 @@ import usersRoute from './users';
 import advisorsRoute from './advisors';
 import degreesRoute from './degrees';
 import facultiesRoute from './faculties';
+import departmentsRoute from './departments';
 
 import { Response } from '../helpers/utils';
 import { STATUS, MESSAGE } from '../helpers/constants';
@@ -16,6 +17,8 @@ router.use('/advisors', advisorsRoute);
 router.use('/degrees', degreesRoute);
 
 router.use('/faculties', facultiesRoute);
+
+router.use('/departments', departmentsRoute);
 
 router.all('*', (request, response) => {
   Response.send(response, STATUS.NOT_FOUND, null, MESSAGE.NOT_FOUND, false);

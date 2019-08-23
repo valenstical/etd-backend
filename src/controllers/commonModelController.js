@@ -18,7 +18,6 @@ export class CommonModelController {
       });
       return Response.send(response, STATUS.OK, result, `${model}s fetched successfully`, true);
     } catch (error) {
-      console.log(error);
       return Response.send(
         response,
         STATUS.SERVER_ERROR,
