@@ -15,7 +15,9 @@ class AdvisorController {
    */
   static async getAllAdvisors(request, response) {
     try {
-      const advisors = await Advisor.findAll();
+      const advisors = await Advisor.findAll({
+        order: [['name', 'ASC']],
+      });
       return Response.send(response, STATUS.OK, advisors, 'Advisor fetched successfully', true);
     } catch (error) {
       return Response.send(

@@ -31,11 +31,11 @@ export const validateEmpty = (field, message = `${field} is required`) => body(f
   .isEmpty()
   .withMessage(message);
 
-export const validateNumber = (field, message = `${field} must be a number`, small = true) => body(field)
+export const validateNumber = (field, message = `${field} must be a 7 digit number`) => body(field)
   .trim()
   .isInt()
   .withMessage(message)
-  .isInt({ min: small ? 10000 : 1000000, max: small ? 99999 : 9999999 })
+  .isInt({ min: 1000000, max: 9999999 })
   .withMessage(message);
 
 export const validateUrl = (field = 'url', message = 'Enter a valid url') => body(field)
