@@ -18,6 +18,9 @@ export default (sequelize, DataTypes) => {
       defaultValue: sequelize.NOW,
       onUpdate: sequelize.NOW,
     },
+    collegeId: {
+      type: DataTypes.INTEGER,
+    },
   });
 
   /**
@@ -44,6 +47,11 @@ export default (sequelize, DataTypes) => {
   Department.associate = (models) => {
     Department.belongsTo(models.Faculty, {
       foreignKey: 'facultyId',
+      targetKey: 'id',
+      onDelete: 'RESTRICT',
+    });
+    Department.belongsTo(models.College, {
+      foreignKey: 'collegeId',
       targetKey: 'id',
       onDelete: 'RESTRICT',
     });

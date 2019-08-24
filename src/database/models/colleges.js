@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-  const Degree = sequelize.define('Degree', {
+  const College = sequelize.define('College', {
     id: {
       allowNull: false,
       primaryKey: true,
@@ -18,21 +18,18 @@ export default (sequelize, DataTypes) => {
       defaultValue: sequelize.NOW,
       onUpdate: sequelize.NOW,
     },
-    collegeId: {
-      type: DataTypes.INTEGER,
-    },
   });
 
   /**
-   * Get a degree if exist
+   * Get a college if exist
    * @param {string} column Column to check against
    * @param {string} value Value to lookup
    * @returns {object} The details if found, null
    */
-  Degree.getDegree = async (column, value) => {
+  College.getCollege = async (column, value) => {
     let result = null;
     try {
-      const { dataValues } = await Degree.findOne({
+      const { dataValues } = await College.findOne({
         where: {
           [column]: value,
         },
@@ -43,12 +40,5 @@ export default (sequelize, DataTypes) => {
     }
     return result;
   };
-  Degree.associate = (models) => {
-    Degree.belongsTo(models.College, {
-      foreignKey: 'collegeId',
-      targetKey: 'id',
-      onDelete: 'RESTRICT',
-    });
-  };
-  return Degree;
+  return College;
 };

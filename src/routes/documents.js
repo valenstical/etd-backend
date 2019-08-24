@@ -1,37 +1,46 @@
 import express from 'express';
-import { handleValidation, validateRequired, validateNumber } from '../middleware/validatorHelpers';
+import { handleValidation, validateNumber } from '../middleware/validatorHelpers';
 import { validateToken } from '../middleware/authenticate';
 import { validateAdmin } from '../middleware/validateAdmin';
 import { CommonModelController } from '../controllers/commonModelController';
-import { filterCommonQuery } from '../middleware/filters';
+import {
+  validateCreateDocument,
+  validateRelationships,
+  validateTagsAndAdvisors,
+} from '../middleware/validateDocument';
+import { filterDocumentQuery } from '../middleware/filters';
 
 const router = express.Router();
 
-// Get all advisors
-router.get('/', filterCommonQuery, CommonModelController.getAll);
+// Get all documents
+router.get('/', filterDocumentQuery, CommonModelController.getAll);
 
-// Add a new advisor
+// Add a new document
 router.post(
   '/',
   validateToken,
   validateAdmin,
-  [validateRequired('name')],
+  validateCreateDocument,
   handleValidation,
+  validateRelationships,
+  validateTagsAndAdvisors,
   CommonModelController.create,
 );
 
-// Edit a advisor
+// Edit a document
 router.patch(
   '/',
   validateToken,
   validateAdmin,
-  [validateRequired('name')],
   [validateNumber('id')],
+  validateCreateDocument,
   handleValidation,
+  validateRelationships,
+  validateTagsAndAdvisors,
+  CommonModelController.createAdvisors,
   CommonModelController.update,
 );
-
-// Delete a advisor
+// Delete a document
 router.delete(
   '/',
   validateToken,
