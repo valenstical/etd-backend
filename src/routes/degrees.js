@@ -3,16 +3,12 @@ import { handleValidation, validateRequired, validateNumber } from '../middlewar
 import { validateToken } from '../middleware/authenticate';
 import { validateAdmin } from '../middleware/validateAdmin';
 import { CommonModelController } from '../controllers/commonModelController';
+import { filterCommonQuery } from '../middleware/filters';
 
 const router = express.Router();
 
-const setModel = (request, response, next) => {
-  response.locals.model = 'Degree';
-  next();
-};
-
 // Get all degrees
-router.get('/', setModel, CommonModelController.getAll);
+router.get('/', filterCommonQuery, CommonModelController.getAll);
 
 // Add a new degree
 router.post(
@@ -21,7 +17,6 @@ router.post(
   validateAdmin,
   [validateRequired('name')],
   handleValidation,
-  setModel,
   CommonModelController.create,
 );
 
@@ -33,7 +28,6 @@ router.patch(
   [validateRequired('name')],
   [validateNumber('id')],
   handleValidation,
-  setModel,
   CommonModelController.update,
 );
 
@@ -44,7 +38,6 @@ router.delete(
   validateAdmin,
   [validateNumber('id')],
   handleValidation,
-  setModel,
   CommonModelController.delete,
 );
 

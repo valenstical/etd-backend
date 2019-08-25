@@ -14,6 +14,9 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       unique: true,
     },
+    collegeId: {
+      type: DataTypes.INTEGER,
+    },
     password: {
       type: DataTypes.STRING,
       set(value) {
@@ -64,7 +67,11 @@ export default (sequelize, DataTypes) => {
   };
 
   User.associate = (models) => {
-    // associations can be defined here
+    User.belongsTo(models.College, {
+      foreignKey: 'collegeId',
+      targetKey: 'id',
+      onDelete: 'RESTRICT',
+    });
   };
   return User;
 };

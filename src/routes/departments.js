@@ -8,16 +8,12 @@ import {
 import { validateToken } from '../middleware/authenticate';
 import { validateAdmin } from '../middleware/validateAdmin';
 import { CommonModelController } from '../controllers/commonModelController';
+import { filterCommonQuery } from '../middleware/filters';
 
 const router = express.Router();
 
-const setModel = (request, response, next) => {
-  response.locals.model = 'Department';
-  next();
-};
-
 // Get all faculties
-router.get('/', setModel, CommonModelController.getAll);
+router.get('/', filterCommonQuery, CommonModelController.getAll);
 
 // Add a new degree
 router.post(
@@ -28,7 +24,6 @@ router.post(
   [validateNumber('facultyId', 'Faculty ID must be 7 digit number')],
   [validateOptionalUrl('image')],
   handleValidation,
-  setModel,
   CommonModelController.create,
 );
 
@@ -42,7 +37,6 @@ router.patch(
   [validateNumber('facultyId', 'Faculty ID is must be 7 digit number')],
   [validateOptionalUrl('image')],
   handleValidation,
-  setModel,
   CommonModelController.update,
 );
 
@@ -53,7 +47,6 @@ router.delete(
   validateAdmin,
   [validateNumber('id')],
   handleValidation,
-  setModel,
   CommonModelController.delete,
 );
 

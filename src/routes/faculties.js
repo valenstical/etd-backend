@@ -1,18 +1,23 @@
 import express from 'express';
-import { handleValidation, validateRequired, validateNumber } from '../middleware/validatorHelpers';
+import {
+  handleValidation,
+  validateRequired,
+  validateNumber,
+  validateOptionalNumber,
+} from '../middleware/validatorHelpers';
 import { validateToken } from '../middleware/authenticate';
 import { validateAdmin } from '../middleware/validateAdmin';
 import { CommonModelController } from '../controllers/commonModelController';
 
 const router = express.Router();
 
-const setModel = (request, response, next) => {
-  response.locals.model = 'Faculty';
-  next();
-};
-
 // Get all faculties
-router.get('/', setModel, CommonModelController.getAll);
+router.get(
+  '/',
+  validateOptionalNumber('collegeId'),
+  handleValidation,
+  CommonModelController.getAll,
+);
 
 // Add a new degree
 router.post(
@@ -21,7 +26,6 @@ router.post(
   validateAdmin,
   [validateRequired('name')],
   handleValidation,
-  setModel,
   CommonModelController.create,
 );
 
@@ -33,7 +37,6 @@ router.patch(
   [validateRequired('name')],
   [validateNumber('id')],
   handleValidation,
-  setModel,
   CommonModelController.update,
 );
 
@@ -44,7 +47,6 @@ router.delete(
   validateAdmin,
   [validateNumber('id')],
   handleValidation,
-  setModel,
   CommonModelController.delete,
 );
 

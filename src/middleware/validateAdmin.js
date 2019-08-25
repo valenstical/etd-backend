@@ -17,6 +17,7 @@ export const validateAdmin = async (request, response, next) => {
         false,
       );
     }
+    response.locals.collegeId = user.collegeId;
     next();
   } catch (error) {
     return Response.sendServerError(response, error);

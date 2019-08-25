@@ -31,11 +31,29 @@ export const validateEmpty = (field, message = `${field} is required`) => body(f
   .isEmpty()
   .withMessage(message);
 
-export const validateNumber = (field, message = `${field} must be a 7 digit number`) => body(field)
+export const validateNumber = (
+  field,
+  message = `${field} must be a 7 digit number`,
+  min = 1000000,
+  max = 9999999,
+) => body(field)
   .trim()
   .isInt()
   .withMessage(message)
-  .isInt({ min: 1000000, max: 9999999 })
+  .isInt({ min, max })
+  .withMessage(message);
+
+export const validateOptionalNumber = (
+  field,
+  message = `${field} must be a 7 digit number`,
+  min = 1000000,
+  max = 9999999,
+) => body(field)
+  .trim()
+  .optional()
+  .isInt()
+  .withMessage(message)
+  .isInt({ min, max })
   .withMessage(message);
 
 export const validateUrl = (field = 'url', message = 'Enter a valid url') => body(field)
@@ -66,16 +84,6 @@ export const validateComparison = (field1, field2, message = 'Passwords do not m
     }),
 ];
 
-export const validatePagination = (request, response, next) => {
-  const page = request.query.page || 1;
-  const limit = request.query.size || 50;
-  const offset = page * limit - limit;
-  response.locals.offset = !offset || offset < 0 ? 0 : offset;
-  response.locals.limit = limit;
-  response.locals.current = response.locals.offset === 0 ? 1 : Number(request.query.page);
-  next();
-};
-
 export const handleValidation = (request, response, next) => {
   const errors = validationResult(request).formatWith(({ param, msg }) => ({
     [param]: msg,
@@ -89,5 +97,10 @@ export const handleValidation = (request, response, next) => {
       false,
     );
   }
+  next();
+};
+
+export const setModel = model => (request, response, next) => {
+  response.locals.model = model;
   next();
 };

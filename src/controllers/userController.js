@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import Random from 'random-int';
 
-import { Response, generateToken, valueFromToken } from '../helpers/utils';
+import { Response, generateToken } from '../helpers/utils';
 import { STATUS } from '../helpers/constants';
 import models from '../database/models';
 
@@ -61,8 +61,10 @@ class UserController {
    */
   static async registerUser(request, response) {
     const { body } = request;
+    const { collegeId } = response.locals;
     try {
       body.id = Random(10000, 99999);
+      body.collegeId = collegeId;
       const { dataValues } = await User.create(body);
       delete dataValues.password;
       dataValues.token = generateToken({ id: dataValues.id });
@@ -80,8 +82,9 @@ class UserController {
    */
   static async updateUser(request, response) {
     const { userId } = request.body;
+    const { collegeId } = response.locals;
     try {
-      await User.update(request.body, { where: { id: userId } });
+      await User.update(request.body, { where: { [Op.and]: { id: userId, collegeId } } });
       return Response.send(response, STATUS.OK, null, 'Update sucessful!', true);
     } catch (error) {
       return UserController.displayInsertError('Update user details failed.', error, response);
@@ -96,40 +99,15 @@ class UserController {
    */
   static async deactivateUser(request, response) {
     const { userId, status } = request.body;
+    const { collegeId } = response.locals;
     try {
       await User.update(
         { isActive: status },
-        { where: { id: userId, [Op.not]: { isAdmin: true } } },
+        { where: { [Op.and]: { id: userId, collegeId }, [Op.not]: { isAdmin: true } } },
       );
       return Response.send(response, STATUS.OK, null, 'User status updated!', true);
     } catch (error) {
       return UserController.displayInsertError('Update user status failed.', error, response);
-    }
-  }
-
-  /**
-   * Reset password
-   * @param {object} request The request object
-   * @param {object} response The response object
-   * @param {function} next The next callback function
-   */
-  static async resetPassword(request, response) {
-    const id = valueFromToken('id', response);
-    const { password } = request.body;
-    try {
-      if (!id) {
-        return Response.send(
-          response,
-          STATUS.UNATHORIZED,
-          null,
-          'There was an issue verifying your account. You may need to send another request for a new password.',
-          true,
-        );
-      }
-      await User.update({ password }, { where: { id } });
-      return Response.send(response, STATUS.CREATED, null, 'Password reset sucessful!', true);
-    } catch (error) {
-      return UserController.displayInsertError('Password reset failed!.', error, response);
     }
   }
 
