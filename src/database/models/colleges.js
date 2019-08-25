@@ -20,25 +20,5 @@ export default (sequelize, DataTypes) => {
     },
   });
 
-  /**
-   * Get a college if exist
-   * @param {string} column Column to check against
-   * @param {string} value Value to lookup
-   * @returns {object} The details if found, null
-   */
-  College.getCollege = async (column, value) => {
-    let result = null;
-    try {
-      const { dataValues } = await College.findOne({
-        where: {
-          [column]: value,
-        },
-      });
-      result = dataValues;
-    } catch (error) {
-      // TODO
-    }
-    return result;
-  };
   return College;
 };
