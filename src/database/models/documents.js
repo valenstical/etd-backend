@@ -66,28 +66,6 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
     },
   });
-
-  /**
-   * Get a document if exist
-   * @param {string} column Column to check against
-   * @param {string} value Value to lookup
-   * @returns {object} The details if found, null
-   */
-  Document.getDocument = async (column, value) => {
-    let result = null;
-    try {
-      const { dataValues } = await Document.findOne({
-        where: {
-          [column]: value,
-        },
-      });
-      result = dataValues;
-    } catch (error) {
-      // TODO
-    }
-    return result;
-  };
-
   Document.associate = (models) => {
     Document.belongsTo(models.Faculty, {
       foreignKey: 'facultyId',
