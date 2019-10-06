@@ -42,7 +42,7 @@ export class CommonModelController {
       return Response.send(
         response,
         STATUS.SERVER_ERROR,
-        error,
+        [],
         'Server error, please try again.',
         false,
       );
@@ -68,7 +68,7 @@ export class CommonModelController {
       return Response.send(
         response,
         STATUS.SERVER_ERROR,
-        error,
+        [],
         'Server error, please try again.',
         false,
       );
