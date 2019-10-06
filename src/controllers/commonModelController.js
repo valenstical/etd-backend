@@ -43,7 +43,7 @@ export class CommonModelController {
         response,
         STATUS.SERVER_ERROR,
         error,
-        'Server error, please try agains.',
+        'Server error, please try again.',
         false,
       );
     }
