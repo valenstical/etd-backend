@@ -16,17 +16,18 @@ export const filterCommonQuery = (request, response, next) => {
   response.locals.order = [_.split(order || 'name,ASC', ',')];
   next();
 };
-
 export const filterDocumentQuery = (request, response, next) => {
   const { model } = response.locals;
   const {
-    order, q, advisors, author
+    order, q, advisors, author, departmentId, type
   } = request.query;
   const columns = _.keys(models[model].rawAttributes);
   const filters = _.pick(request.query, [...columns]);
 
-  filters.author = { [Op.iLike]: `%${sanitizeValue(filters.author)}%` };
+  filters.author = { [Op.iLike]: `%${sanitizeValue(author)}%` };
   filters.advisors = { [Op.contains]: [sanitizeValue(advisors)] };
+  filters.departmentId = { [Op.in]: sanitizeValue(departmentId).split(',') };
+  filters.type = { [Op.in]: sanitizeValue(type).split(',') };
 
   if (!_.isEmpty(q)) {
     filters[Op.or] = {
@@ -36,11 +37,21 @@ export const filterDocumentQuery = (request, response, next) => {
       tags: { [Op.contains]: [sanitizeValue(q)] },
     };
   }
+
+  if (!author) {
+    delete filters.author;
+  }
+
   if (!advisors) {
     delete filters.advisors;
   }
-  if (!author) {
-    delete filters.author;
+
+  if (!departmentId) {
+    delete filters.departmentId;
+  }
+
+  if (!type) {
+    delete filters.type;
   }
 
   response.locals.where = filters;

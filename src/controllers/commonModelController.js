@@ -18,7 +18,10 @@ export class CommonModelController {
     const { page, limit, offset } = paginate(request.query);
     try {
       const result = await models[model].findAndCountAll({
-        limit, offset, where, order
+        limit,
+        offset,
+        where,
+        order,
       });
       return Response.send(
         response,
@@ -39,7 +42,7 @@ export class CommonModelController {
       return Response.send(
         response,
         STATUS.SERVER_ERROR,
-        [],
+        error,
         'Server error, please try again.',
         false,
       );
@@ -108,7 +111,11 @@ export class CommonModelController {
     const { collegeId } = response.locals;
     try {
       const { advisors } = request.body;
-      const data = advisors.map(item => ({ name: item, id: Random(1000000, 9999999), collegeId }));
+      const data = advisors.map((item) => ({
+        name: item,
+        id: Random(1000000, 9999999),
+        collegeId,
+      }));
       await models.Advisor.bulkCreate(data);
     } catch (error) {
       // TODO
