@@ -29,7 +29,7 @@ export class CommonModelController {
         {
           result: result.rows,
           pagination: {
-            currentPage: page,
+            currentPage: +page,
             lastPage: Math.ceil(result.count / limit),
             currentCount: result.rows.length,
             totalCount: result.count,
