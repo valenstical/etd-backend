@@ -29,7 +29,7 @@ export class CommonModelController {
         {
           result: result.rows,
           pagination: {
-            currentPage: page,
+            currentPage: +page,
             lastPage: Math.ceil(result.count / limit),
             currentCount: result.rows.length,
             totalCount: result.count,
@@ -42,7 +42,7 @@ export class CommonModelController {
       return Response.send(
         response,
         STATUS.SERVER_ERROR,
-        error,
+        [],
         'Server error, please try again.',
         false,
       );
@@ -68,7 +68,7 @@ export class CommonModelController {
       return Response.send(
         response,
         STATUS.SERVER_ERROR,
-        error,
+        [],
         'Server error, please try again.',
         false,
       );
