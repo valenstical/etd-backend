@@ -14,9 +14,6 @@ export default (sequelize, DataTypes) => {
     url: {
       type: DataTypes.STRING,
     },
-    degreeId: {
-      type: DataTypes.INTEGER,
-    },
     type: {
       type: DataTypes.INTEGER,
     },
@@ -41,9 +38,6 @@ export default (sequelize, DataTypes) => {
     matNumber: {
       type: DataTypes.STRING,
     },
-    facultyId: {
-      type: DataTypes.INTEGER,
-    },
     departmentId: {
       type: DataTypes.INTEGER,
     },
@@ -67,21 +61,12 @@ export default (sequelize, DataTypes) => {
     },
   });
   Document.associate = (models) => {
-    Document.belongsTo(models.Faculty, {
-      foreignKey: 'facultyId',
-      targetKey: 'id',
-      onDelete: 'RESTRICT',
-    });
     Document.belongsTo(models.Department, {
       foreignKey: 'departmentId',
       targetKey: 'id',
       onDelete: 'RESTRICT',
     });
-    Document.belongsTo(models.Degree, {
-      foreignKey: 'degreeId',
-      targetKey: 'id',
-      onDelete: 'RESTRICT',
-    });
+
     Document.belongsTo(models.College, {
       foreignKey: 'collegeId',
       targetKey: 'id',
